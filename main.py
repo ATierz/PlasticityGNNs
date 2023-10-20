@@ -7,8 +7,8 @@ import time
 import src
 import os
 
-Rs = [1, 1.25]#, 1.5, 1.75, 2]
-Ls = [4, 3.5]#, 3, 2.75, 2]
+Rs = [1, 1.25, 1.5, 1.75, 2, 2.5]
+Ls = [4, 3.5, 3, 2.75, 2, 1.75]
 
 if __name__ == '__main__':
     # Command-line argument parsing
@@ -26,5 +26,8 @@ if __name__ == '__main__':
     # Extract data from OBDs, such as, U, S
     print('\nExtracting data from ODBs...')
     DataExtractorFromODB.generate_data_from_odb_files(output_path)
-    #clean_artifact_files(output_path)
-    #clean_artifact_files(os.path.dirname(src.__file__))
+    # Cleaning artifact files
+    print('\nCleaning artifacts...')
+    for item in output_path.iterdir():
+        clean_artifact_files(item)
+    clean_artifact_files(os.path.dirname(src.__file__))

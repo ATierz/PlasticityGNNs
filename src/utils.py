@@ -3,7 +3,7 @@ import os
 
 def clean_artifact_files(directory):
     # Define the allowed file extensions
-    allowed_extensions = ['.odb', '.inp', '.txt', '.py']
+    allowed_extensions = ['.odb', '.inp', '.txt', '.py', '.cae']
 
     # Iterate through files in the directory and delete files with disallowed extensions
     for filename in os.listdir(directory):
@@ -13,7 +13,7 @@ def clean_artifact_files(directory):
             if file_extension not in allowed_extensions:
                 try:
                     os.remove(file_path)
-                    print(f'Deleted: {file_path}')
+                    #print(f'Deleted: {file_path}')
                 except Exception as e:
                     print(f'Error deleting {file_path}: {e}')
 

@@ -74,7 +74,7 @@ for odb_file in odb_files:
 
         # Write a field report to a text file
         session.writeFieldReport(
-            fileName=odb_file + '.txt',
+            fileName=os.path.splitext(odb_file)[0] + '_variables_data.txt',
             append=ON,
             sortItem='Element Label',
             odb=odb,
