@@ -1,7 +1,6 @@
 import pandas as pd
 import re
 from pathlib import Path
-import argparse
 
 
 class GeometryModifier(object):
@@ -87,15 +86,3 @@ class GeometryModifier(object):
         df_string_no_duplicates_spaces_inp_format = df_string_no_duplicates_spaces.replace(' ', ',')
         df_string_no_duplicates_spaces_inp_format = df_string_no_duplicates_spaces_inp_format.replace('\n,', '\n')[1:]
         return df_string_no_duplicates_spaces_inp_format
-
-
-if __name__ == '__main__':
-    # Command-line argument parsing
-    parser = argparse.ArgumentParser(description='Abaqus Geometry Modifier')
-    parser.add_argument('--L', type=float, default=1, help='Value for L_new (default: 1.3)')
-    parser.add_argument('--R', type=float, default=4, help='Value for R_new (default: 3)')
-    parser.add_argument('--input_file', type=str)
-    args = parser.parse_args()  # Parse command-line arguments
-
-    geometric_modifier = GeometryModifier(args.input_file)
-    geometric_modifier.generate(args.L, args.R)  # Call the generate method with parsed arguments

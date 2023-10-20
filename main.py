@@ -1,11 +1,14 @@
-from geometry_modifier import GeometryModifier
-from odb_generator import ODBGenerator, DataExtractorFromODB
-from utils import clean_undesired_files
+from src.processor_geometry_inp_files import GeometryModifier
+from src.processor_odb_files import ODBGenerator, DataExtractorFromODB
+from src.utils import clean_artifact_files
+
 import argparse
 import time
+import src
+import os
 
-Rs = [1, 1.25, 1.5, 1.75, 2]
-Ls = [4, 3.5, 3, 2.75, 2]
+Rs = [1, 1.25]#, 1.5, 1.75, 2]
+Ls = [4, 3.5]#, 3, 2.75, 2]
 
 if __name__ == '__main__':
     # Command-line argument parsing
@@ -19,9 +22,9 @@ if __name__ == '__main__':
     print('\nGenerating ODB files...')
     ODBGenerator.generate_odb_from_inp_files(output_path)
     # Time break to let some processes finish on Abaqus
-    time.sleep(15)
+    time.sleep(10)
     # Extract data from OBDs, such as, U, S
     print('\nExtracting data from ODBs...')
-    DataExtractorFromODB.generate_data_from_odb_files(output_path.parent, variables=['U', 'S'])
-
-    clean_undesired_files(output_path)
+    DataExtractorFromODB.generate_data_from_odb_files(output_path)
+    #clean_artifact_files(output_path)
+    #clean_artifact_files(os.path.dirname(src.__file__))

@@ -1,6 +1,7 @@
 import subprocess
 from pathlib import Path
 import os
+import src
 
 
 class ODBGenerator(object):
@@ -46,8 +47,8 @@ class DataExtractorFromODB(object):
 
     @staticmethod
     def generate_data_from_odb_files(path):
-        os.chdir(path)
-        cmd = f"abaqus cae noGui=generate_data_from_odb.py"
+        os.chdir(os.path.dirname(src.__file__))
+        cmd = f"abaqus cae noGui=abaqus_script_odb_to_data.py"
         subprocess.run(cmd, shell=True)
 
 

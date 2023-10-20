@@ -1,10 +1,21 @@
+'''
+    This script appears to open an Abaqus output database (ODB), iterate over frames, and write the nodal
+    displacements (U) to a text file for each frame. It is assumed that the script is run within the directory
+    containing the ODB file of interest. If you want to extract additional data or make other modifications,
+    you can adapt the script as needed.
+'''
+
+# TODO: For better generalization change the way of naming the output path. Now i can not provide parameter path, so it's
+# TODO: fixed in line 43 to where it should look. Default outputs
+
 from abaqus import *
 from abaqusConstants import *
 from viewerModules import *
 from driverUtils import executeOnCaeStartup
-import os
+import argparse
 
 
+#################SOME FUNCTIONS#########################
 def find_odb_files(folder):
     odb_files = []  # List to store found .odb files
     for item in os.listdir(folder):
@@ -17,26 +28,20 @@ def find_odb_files(folder):
             print("Found .odb file:", item_path)
             odb_files.append(item_path)  # Add the file to the list
     return odb_files
+##############################################################
 
-'''
-    This script appears to open an Abaqus output database (ODB), iterate over frames, and write the nodal 
-    displacements (U) to a text file for each frame. It is assumed that the script is run within the directory 
-    containing the ODB file of interest. If you want to extract additional data or make other modifications, 
-    you can adapt the script as needed.
-'''
 
 # Create a viewport and set it as the current one
 session.Viewport(name='Viewport: 1',
-                 origin=(0.0, 0.0),
-                 width=253.28515625,
-                 height=127.874992370605)
+             origin=(0.0, 0.0),
+             width=253.28515625,
+             height=127.874992370605)
 session.viewports['Viewport: 1'].makeCurrent()
 session.viewports['Viewport: 1'].maximize()
 executeOnCaeStartup()
 
 # Call the function to start looping through folders
-print(os.getcwd() + "/outputs")
-odb_files = find_odb_files(os.getcwd())
+odb_files = find_odb_files(r'C:\Users\mikelmartinez\Desktop\data\outputs')
 
 for odb_file in odb_files:
     # Open the identified .odb file
@@ -78,7 +83,10 @@ for odb_file in odb_files:
             outputPosition=NODAL,
             variable=(
                 ('U', NODAL),  # Nodal displacements
+                ('S', NODAL),  # Nodal tension
             ))
 
     # Close the .odb file
     odb.close()
+
+
