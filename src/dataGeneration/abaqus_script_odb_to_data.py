@@ -83,7 +83,7 @@ for odb_file in odb_files:
             outputPosition=NODAL,
             variable=(
                 ('U', NODAL),  # Nodal displacements
-                ('S', NODAL),  # Nodal tension
+                ('S', INTEGRATION_POINT),  # Nodal tension
             ))
 
     # Close the .odb file
