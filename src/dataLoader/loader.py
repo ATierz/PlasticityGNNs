@@ -16,10 +16,10 @@ class DataLoader(object):
         self.path_to_data_folder = Path(path_to_data_folder)
         self.dataset_df = None
 
-    def load(self, desired_simulations=None):
+    def load_nodal_variables(self, desired_simulations=None):
         # Load data from text files in the data folder
 
-        print('Loading data...')
+        print('Loading nodal variables data...')
 
         # Initialize an empty list to store DataFrames for each simulation
         dataset_df = []
@@ -50,6 +50,38 @@ class DataLoader(object):
         print('Done!')
 
         return self.dataset_df
+
+    def load_edges(self, desired_simulations=None):
+        # Load data from text files in the data folder
+
+        print('Loading edges data...')
+
+        # Initialize an empty list to store DataFrames for each simulation
+        edges = []
+
+        # Loop through all ".inp" files within subfolders of the data folder
+        for file in self.path_to_data_folder.rglob('**/*.inp'):
+
+            # Extract the simulation name from the file path
+            simulation_name = file.parts[-2]
+
+            # Check if the simulation is in the list of desired simulations
+            if desired_simulations is not None:
+                if simulation_name not in desired_simulations:
+                    continue  # Skip this simulation if not desired
+
+            # Use the DataReader to read the data from the text file into a DataFrame
+            simulation_dict = DataReader().get_edges_from_inp(file)
+
+            # Insert a new column 'Simulation' with the simulation name
+            simulation_dict['simulation'] = simulation_name
+
+            # Append the simulation DataFrame to the dataset list
+            edges.append(simulation_dict)
+
+        print('Done!')
+
+        return edges
 
     def save(self, path):
         self.dataset_df.to_csv(path)

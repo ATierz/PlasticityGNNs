@@ -1,6 +1,9 @@
+from itertools import combinations
+from pathlib import Path
+
+import numpy as np
 import pandas as pd
 import re
-
 
 class DataReader(object):
 
@@ -8,10 +11,54 @@ class DataReader(object):
     DataReader class for extracting data from a specific format in text files
     """
     def __init__(self):
-        # Define regular expression patterns to match lines with desired data
+        # Define regular expression patterns to match lines with desired data for simulation_variable_data.txt
         self.pattern_line = r'\d+\s+[\d.E-]+\s+[\d.E-]+\s+[\d.E-]'
         self.pattern_frame_increment = r'Frame: Increment\s+(\d+)'
         self.pattern_step_time = r'Step Time =\s+([\d.E-]+)'
+        # Define regular expression pattern for simulation.inp files
+        self.pattern_start_element_info = r'*Element'
+        self.pattern_end_element_info = r'*Elset'
+
+    def get_edges_from_inp(self, filename):
+        # Initialize empty lists to store data
+        data_edges = {'element': [], 'edges': []}
+        # Open the text file and read it line by line
+        with open(filename, 'r') as file:
+
+            reading_data = False  # Flag to indicate when we are reading data
+
+            for line in file:
+
+                if self.pattern_start_element_info in line:
+                    reading_data = True
+                    continue
+
+                elif self.pattern_end_element_info in line:
+                    break
+
+                elif reading_data:
+
+                    element_data = [int(match.group()) for match in re.finditer(r'\d+', line.strip())]
+
+                    element_nodes = sorted(element_data[1:])
+                    elements_diagonal = ((element_nodes[0], element_nodes[-1]), (element_nodes[1], element_nodes[-2]))
+                    element_fully_connected_edges = list(set(combinations(sorted(element_nodes), 2)))
+                    element_edges = np.array([list(item) for item in element_fully_connected_edges if item not in elements_diagonal]).transpose()
+
+                    data_edges['element'].append(element_data[0])
+                    data_edges['edges'].append(element_edges)
+
+        data_edges['edge_index'] = self.build_edge_index_matrix(data_edges['edges'])
+
+        return data_edges
+
+    def build_edge_index_matrix(self, edges):
+
+        src_row, dest_row = [], []
+        for elem in edges:
+            src_row += list(elem[0])
+            dest_row += list(elem[1])
+        return np.array([src_row, dest_row])
 
     def get_df_from_txt(self, filename):
         # Extract and structure data from a text file into a pandas DataFrame
@@ -58,8 +105,7 @@ class DataReader(object):
         # Create a pandas DataFrame from the extracted data
         df_tables = pd.concat(data)
 
-        # Convert columns to appropriate data types
-        #df_tables = df_tables.astype({'Node_Label': int, 'U_Magnitude': float, 'U_U1': float, 'U_U2': float, 'Step_time': float})
-
         # Return the resulting DataFrame
         return df_tables
+
+
