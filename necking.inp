@@ -1938,41 +1938,11 @@ TOP, 2, 2, 0.76
 ** 
 ** FIELD OUTPUT: F-Output-1
 ** 
-*Output, field, variable=PRESELECT
-** 
-** HISTORY OUTPUT: H-Output-1
-** 
-*Output, history, variable=PRESELECT
-*End Step
-** ----------------------------------------------------------------
-** 
-** STEP: Step-2
-** 
-*Step, name=Step-2, nlgeom=YES, inc=400
-*Static
-0.001, 0.1, 1e-06, 0.03
-** 
-** BOUNDARY CONDITIONS
-** 
-** Name: Disp-BC-1 Type: Displacement/Rotation
-*Boundary, op=NEW
-BOT, 2, 2
-** Name: Disp-BC-2 Type: Displacement/Rotation
-*Boundary, op=NEW
-LEFT, 1, 1
-** Name: Disp-BC-3 Type: Displacement/Rotation
-*Boundary, op=NEW
-** Name: Disp-BC-4 Type: Displacement/Rotation
-*Boundary, op=NEW
-TOP, 2, 2, 0.79
-** 
-** OUTPUT REQUESTS
-** 
-*Restart, write, frequency=100
-** 
-** FIELD OUTPUT: F-Output-1
-** 
-*Output, field, variable=PRESELECT
+*Output, field
+*Node Output
+COORD, U
+*Element Output, directions=YES
+LE, PE, PEEQ, PEMAG, S
 ** 
 ** HISTORY OUTPUT: H-Output-1
 ** 

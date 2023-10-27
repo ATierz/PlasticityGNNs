@@ -3,8 +3,9 @@ import pandas as pd
 from src.dataLoader.reader import DataReader
 
 
-class DataLoader(object):
+# Import necessary libraries, modules, and classes (e.g., Path, DataReader, pandas) should be imported here.
 
+class DataBuilder(object):
     """
     Class with a load method for loading data from ".txt" files within subfolders of a specified data folder.
     It allows you to specify desired simulations and reads the data using the DataReader class. The results are
@@ -12,12 +13,12 @@ class DataLoader(object):
     Finally, the individual DataFrames are concatenated into a single dataset DataFrame.
     """
     def __init__(self, path_to_data_folder):
-        # Initialize the DataLoader with the path to the data folder
+        # Constructor to initialize the DataLoader with the path to the data folder
         self.path_to_data_folder = Path(path_to_data_folder)
-        self.dataset_df = None
+        self.dataset_df = None  # Initialize a variable to store the final dataset DataFrame
 
-    def load_nodal_variables(self, desired_simulations=None):
-        # Load data from text files in the data folder
+    def get_nodal_variables(self, desired_simulations=None):
+        # Method to load nodal variable data from text files
 
         print('Loading nodal variables data...')
 
@@ -49,15 +50,15 @@ class DataLoader(object):
 
         print('Done!')
 
-        return self.dataset_df
+        return self.dataset_df  # Return the final dataset DataFrame
 
-    def load_edges(self, desired_simulations=None):
-        # Load data from text files in the data folder
+    def get_edges(self, desired_simulations=None):
+        # Method to load edges data from text files
 
         print('Loading edges data...')
 
         # Initialize an empty list to store DataFrames for each simulation
-        edges = []
+        edges = {}
 
         # Loop through all ".inp" files within subfolders of the data folder
         for file in self.path_to_data_folder.rglob('**/*.inp'):
@@ -73,16 +74,14 @@ class DataLoader(object):
             # Use the DataReader to read the data from the text file into a DataFrame
             simulation_dict = DataReader().get_edges_from_inp(file)
 
-            # Insert a new column 'Simulation' with the simulation name
-            simulation_dict['simulation'] = simulation_name
-
             # Append the simulation DataFrame to the dataset list
-            edges.append(simulation_dict)
+            edges[simulation_name] = simulation_dict
 
         print('Done!')
 
-        return edges
+        return edges  # Return the list of loaded edges data
 
     def save(self, path):
+        # Method to save the final dataset DataFrame as a CSV file
         self.dataset_df.to_csv(path)
         print(f'Data stored as .csv at {path}')

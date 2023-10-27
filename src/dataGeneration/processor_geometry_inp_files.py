@@ -21,18 +21,17 @@ class GeometryModifier(object):
         print(f'Generating new geometry with shape L={L_new} and R={R_new}...')
 
         with open(self.input_file_path, 'r') as input_file:
-            inside_section = False  # Initialize a flag to indicate if we're inside the relevant section
+            inside_section, first_node = False, True  # Initialize a flag to indicate if we're inside the relevant section
             section_lines, lines = [], []  # Create lists to store lines
-
             for line in input_file:  # Iterate through each line in the input file
                 if '** Job' in line:
                     lines.append(f'** Job name: rectangle_L{L_new}_R{R_new} Model name: rectangle_L{L_new}_R{R_new}\n')
                     continue
-                if '*Node' in line:
+                if '*Node' in line and 'Output' not in line:
                     lines.append(line)
                     inside_section = True  # Start capturing lines when '*Node' is found
 
-                elif '*Element' in line:
+                elif '*Element,' in line and 'Output' not in line:
                     # Get new geometry, format it, and append it to lines
                     df_new_geometry = self.get_geometry(section_lines, L_new, R_new)
                     str_df_new_geometry_inp_format = GeometryModifier.set_df_to_str_inp_format(df_new_geometry)

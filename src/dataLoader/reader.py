@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import re
 
+
 class DataReader(object):
 
     """
@@ -31,6 +32,7 @@ class DataReader(object):
 
                 if self.pattern_start_element_info in line:
                     reading_data = True
+                    num_elem = 0
                     continue
 
                 elif self.pattern_end_element_info in line:
@@ -38,17 +40,19 @@ class DataReader(object):
 
                 elif reading_data:
 
+                    num_elem += 1
+
                     element_data = [int(match.group()) for match in re.finditer(r'\d+', line.strip())]
 
                     element_nodes = sorted(element_data[1:])
                     elements_diagonal = ((element_nodes[0], element_nodes[-1]), (element_nodes[1], element_nodes[-2]))
                     element_fully_connected_edges = list(set(combinations(sorted(element_nodes), 2)))
-                    element_edges = np.array([list(item) for item in element_fully_connected_edges if item not in elements_diagonal]).transpose()
-
+                    element_edges = [item for item in element_fully_connected_edges if   # To have the index according to torch_geometric range(0,num_nodes-1)
+                                              item not in elements_diagonal]
                     data_edges['element'].append(element_data[0])
-                    data_edges['edges'].append(element_edges)
+                    data_edges['edges'] += element_edges
 
-        data_edges['edge_index'] = self.build_edge_index_matrix(data_edges['edges'])
+        data_edges['edge_index'] = self.build_edge_index_matrix(list(set(data_edges['edges'])))
 
         return data_edges
 
@@ -56,9 +60,9 @@ class DataReader(object):
 
         src_row, dest_row = [], []
         for elem in edges:
-            src_row += list(elem[0])
-            dest_row += list(elem[1])
-        return np.array([src_row, dest_row])
+            src_row.append(elem[0] - 1)
+            dest_row.append(elem[1] - 1)
+        return [src_row, dest_row]
 
     def get_df_from_txt(self, filename):
         # Extract and structure data from a text file into a pandas DataFrame
@@ -66,6 +70,8 @@ class DataReader(object):
         # Initialize empty lists to store data
         data = []
         column_headers = None
+
+        filename_inp_current_geometry = filename.parent / (str(filename.name).split('_varia')[0] + '.inp')
 
         # Open the text file and read it line by line
         with open(filename, 'r') as file:
@@ -105,7 +111,47 @@ class DataReader(object):
         # Create a pandas DataFrame from the extracted data
         df_tables = pd.concat(data)
 
+        # Cast the data into floats
+        for col in df_tables.columns:
+            if col in ['Node Label', 'Frame_increment']:
+                continue
+            df_tables[col] = df_tables[col].astype(float)
+
         # Return the resulting DataFrame
         return df_tables
+
+    # def get_nodes_coord_from_inp(self, filename):
+    #
+    #     with open(filename, 'r') as input_file:
+    #         inside_section, first_node = False, True  # Initialize a flag to indicate if we're inside the relevant section
+    #         section_lines = []  # Create lists to store lines
+    #         for line in input_file:  # Iterate through each line in the input file
+    #             if '*Node' in line and 'Output' not in line:
+    #                 inside_section = True  # Start capturing lines when '*Node' is found
+    #
+    #             elif '*Element,' in line and 'Output' not in line:
+    #                 # Get new geometry, format it, and append it to lines
+    #                 df_nodes_coord = pd.DataFrame(section_lines, columns=['Node Label', 'x', 'y'])
+    #
+    #                 df_nodes_coord['Node Label'] = df_nodes_coord['Node Label'].astype(int)
+    #                 df_nodes_coord['x'] = df_nodes_coord['x'].astype(float)
+    #                 df_nodes_coord['y'] = df_nodes_coord['y'].astype(float)
+    #
+    #                 return df_nodes_coord
+    #
+    #             elif inside_section:
+    #                 section_lines.append(line.strip().split(','))  # If inside the section, add the line to the list
+    #
+    # def compute_coord_nodes_from_displacements(self, df, nodes_coord_undeformed):
+    #
+    #     df_displacements = df[df['Node Label'].isin(nodes_coord_undeformed['Node Label'])]
+    #     nodes_coord_undeformed['x'] = nodes_coord_undeformed['x'] + df_displacements['x']
+    #     nodes_coord_undeformed['y'] = nodes_coord_undeformed['y'] + df_displacements['y']
+    #
+    #     df['COORD.X'] = nodes_coord_undeformed['x']
+    #     df['COORD.Y'] = nodes_coord_undeformed['y']
+    #
+    #     return df, nodes_coord_undeformed
+
 
 

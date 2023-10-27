@@ -1,30 +1,32 @@
 from src.dataGeneration.processor_geometry_inp_files import GeometryModifier
 from src.dataGeneration.processor_odb_files import ODBGenerator, DataExtractorFromODB
 from src.dataGeneration.utils import clean_artifact_files
+from src.constants import Ls, Rs
 
 import argparse
 import time
 import src
 import os
 
-Rs = [1, 1.25, 1.5, 1.75, 2, 2.5]
-Ls = [4, 3.5, 3, 2.75, 2, 1.75]
 
 if __name__ == '__main__':
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Abaqus Geometry Modifier')
     parser.add_argument('--input_file', type=str, default=r'C:\Users\mikelmartinez\Desktop\data\necking.inp')
+    parser.add_argument('--output_path', type=str, default=r'C:\Users\mikelmartinez\Desktop\data\outputs\trials')
+
     args = parser.parse_args()  # Parse command-line arguments
 
     # Modify Geometries and generate new
     print('\nGenerating new geometries...')
-    output_path = GeometryModifier(args.input_file).loop_through_geometries(Ls, Rs)
+    output_path = GeometryModifier(args.input_file, output_path=args.output_path).loop_through_geometries(Ls, Rs)
 
     # Generate ODBs from INPs
     print('\nGenerating ODB files...')
     ODBGenerator.generate_odb_from_inp_files(output_path)
 
     # Time break to let some processes finish on Abaqus
+    print('Time break, Abaqus is closing files...')
     time.sleep(10)
 
     # Extract data from OBDs, such as, U, S

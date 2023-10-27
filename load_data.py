@@ -1,8 +1,9 @@
-from src.dataLoader.loader import DataLoader
-from pathlib import Path
+from src.dataLoader.dataset import GraphDataset
+from src.constants import TRAIN_SIMULATIONS, TEST_SIMULATIONS
 import argparse
-import json
 
+
+STATE_VARIABLES = ['U.Magnitude', 'U.U1', 'U.U2', 'S.Mises', 'COORD.COOR1', 'COORD.COOR2']
 
 if __name__ == '__main__':
     # Command-line argument parsing
@@ -10,13 +11,23 @@ if __name__ == '__main__':
     parser.add_argument('--path_to_data', type=str)
     args = parser.parse_args()  # Parse command-line arguments
 
-    # Read Data from .txt files
-    dataloader = DataLoader(args.path_to_data)
+    # Build dataset
+    print('\nPreparing TRAIN dataset...')
+    train_graph_dataset = GraphDataset(args.path_to_data,
+                                 simulation_names=TRAIN_SIMULATIONS,
+                                 state_variables=STATE_VARIABLES)
+    print(f'Train dataset size: {len(train_graph_dataset)}')
 
-    data_nodal_variables = dataloader.load_nodal_variables(desired_simulations=None)
-    dataloader.save(Path(args.path_to_data) / 'data_nodal_variables.csv')
+    print('\nPreparing TEST dataset...')
+    test_graph_dataset = GraphDataset(args.path_to_data,
+                                       simulation_names=TEST_SIMULATIONS,
+                                       state_variables=STATE_VARIABLES)
+    print(f'Test dataset size: {len(test_graph_dataset)}')
 
-    data_edges = dataloader.load_edges(desired_simulations=None)
+    # get dataloader
+    train_dataloader = train_graph_dataset.get_loader(batch_size=32)
+    test_dataloader = test_graph_dataset.get_loader(batch_size=32)
+
 
 
 
