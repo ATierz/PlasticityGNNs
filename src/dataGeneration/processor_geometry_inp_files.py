@@ -4,10 +4,10 @@ from pathlib import Path
 
 
 class GeometryModifier(object):
-    L = 1
-    R = 4
+    L = 4
+    R = 1
 
-    def __init__(self, input_file_path, output_path=None, L=1., R=4):
+    def __init__(self, input_file_path, output_path=None, L=4., R=1.):
         # Constructor to initialize object attributes
         self.L = L
         self.R = R
@@ -16,7 +16,7 @@ class GeometryModifier(object):
                                                                        and output_path is None) else Path(output_path)
         self.output_path.mkdir(exist_ok=True, parents=True)
 
-    def generate(self, L_new, R_new, output_path=None):
+    def generate(self, L_new, R_new):
         # Method to generate a new geometry based on L_new and R_new
         print(f'Generating new geometry with shape L={L_new} and R={R_new}...')
 
@@ -71,8 +71,8 @@ class GeometryModifier(object):
         df['index'] = df['index'].astype(int)
         df['x'] = df['x'].astype(float)
         df['y'] = df['y'].astype(float)
-        kx = L_new / self.L
-        ky = R_new / self.R
+        ky = L_new / self.L
+        kx = R_new / self.R
         df['x'] = df['x'] * kx
         df['y'] = df['y'] * ky
         return df

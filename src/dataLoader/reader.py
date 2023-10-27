@@ -18,7 +18,7 @@ class DataReader(object):
         self.pattern_step_time = r'Step Time =\s+([\d.E-]+)'
         # Define regular expression pattern for simulation.inp files
         self.pattern_start_element_info = r'*Element'
-        self.pattern_end_element_info = r'*Elset'
+        self.pattern_end_element_info = r'*Nset'
 
     def get_edges_from_inp(self, filename):
         # Initialize empty lists to store data
@@ -45,7 +45,10 @@ class DataReader(object):
                     element_data = [int(match.group()) for match in re.finditer(r'\d+', line.strip())]
 
                     element_nodes = sorted(element_data[1:])
-                    elements_diagonal = ((element_nodes[0], element_nodes[-1]), (element_nodes[1], element_nodes[-2]))
+                    try:
+                        elements_diagonal = ((element_nodes[0], element_nodes[-1]), (element_nodes[1], element_nodes[-2]))
+                    except Exception:
+                        print('hi')
                     element_fully_connected_edges = list(set(combinations(sorted(element_nodes), 2)))
                     element_edges = [item for item in element_fully_connected_edges if   # To have the index according to torch_geometric range(0,num_nodes-1)
                                               item not in elements_diagonal]
@@ -70,8 +73,6 @@ class DataReader(object):
         # Initialize empty lists to store data
         data = []
         column_headers = None
-
-        filename_inp_current_geometry = filename.parent / (str(filename.name).split('_varia')[0] + '.inp')
 
         # Open the text file and read it line by line
         with open(filename, 'r') as file:

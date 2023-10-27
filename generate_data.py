@@ -12,7 +12,7 @@ import os
 if __name__ == '__main__':
     # Command-line argument parsing
     parser = argparse.ArgumentParser(description='Abaqus Geometry Modifier')
-    parser.add_argument('--input_file', type=str, default=r'C:\Users\mikelmartinez\Desktop\data\necking.inp')
+    parser.add_argument('--input_file', type=str, default=r'C:\Users\mikelmartinez\Desktop\data\default.inp')
     parser.add_argument('--output_path', type=str, default=r'C:\Users\mikelmartinez\Desktop\data\outputs\trials')
 
     args = parser.parse_args()  # Parse command-line arguments

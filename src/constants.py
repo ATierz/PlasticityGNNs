@@ -1,8 +1,8 @@
 import numpy as np
 
-NUM_SIMULATIONS = 2
-Rs = np.round(np.linspace(0.5, 1.5, NUM_SIMULATIONS), decimals=2).tolist()  # [1, 1.25, 1.5, 1.75, 2, 2.5]
-Ls = np.round(np.linspace(6, 2, NUM_SIMULATIONS), decimals=2).tolist()  # [4, 3.5, 3, 2.75, 2, 1.75]
+NUM_SIMULATIONS = 10
+Rs = np.round(np.linspace(1, 1., NUM_SIMULATIONS), decimals=2).tolist()  # [1, 1.25, 1.5, 1.75, 2, 2.5]
+Ls = np.round(np.linspace(4, 1, NUM_SIMULATIONS), decimals=2).tolist()  # [4, 3.5, 3, 2.75, 2, 1.75]
 
 STATE_VARIABLES = ['Node Label','U.Magnitude', 'U.U1', 'U.U2', 'S.Mises']
 

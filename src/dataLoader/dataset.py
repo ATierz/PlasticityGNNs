@@ -53,5 +53,5 @@ class GraphDataset(Dataset):
     def __len__(self):
         return len(self.data)
 
-    def get_loader(self, batch_size=32):
-        return DataLoader(self.data, batch_size=batch_size)
+    def get_loader(self, batch_size=32, shuffle=False):
+        return DataLoader(self.data, batch_size=batch_size, shuffle=shuffle)
