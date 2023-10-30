@@ -31,13 +31,12 @@ class GraphDataset(Dataset):
         self.data = self.__build_batch_data(self.simulation_names)
 
     def __build_batch_data(self, simulations_list):
+
         batch_data = []
         for simulation_name in simulations_list:
 
             edge_index = torch.tensor(self.data_edges[simulation_name]['edge_index'], dtype=torch.long)
-
             simulation_data_nodal_variables = self.data_nodal_variables[self.data_nodal_variables['Simulation'] == simulation_name]
-
             max_frame_increment = self.data_nodal_variables[self.data_nodal_variables['Simulation'] == simulation_name]['Frame_increment'].max()
 
             for frame_increment in range(max_frame_increment - 1):

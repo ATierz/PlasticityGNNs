@@ -3,6 +3,9 @@ from src.constants import TRAIN_SIMULATIONS, TEST_SIMULATIONS
 from src.plots.plots import plot_graph_data
 import argparse
 
+from PIL import Image
+from pathlib import Path
+
 
 STATE_VARIABLES = ['U.Magnitude', 'U.U1', 'U.U2', 'S.Mises', 'COORD.COOR1', 'COORD.COOR2']
 
@@ -28,16 +31,6 @@ if __name__ == '__main__':
     # get dataloader
     train_dataloader = train_graph_dataset.get_loader(batch_size=1)
     test_dataloader = test_graph_dataset.get_loader(batch_size=32)
-
-    for i, sample in enumerate(train_dataloader):
-        if i == 0 or i>50:
-            stress = sample.x[:, 3].tolist()
-            coord_x = sample.x[:, 4].tolist()
-            coord_y = sample.x[:, 5].tolist()
-
-            plot_graph_data(coord_x, coord_y, stress, sample.edge_index.tolist(), 'S.Misses')
-
-
 
 
 

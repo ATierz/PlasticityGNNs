@@ -39,11 +39,8 @@ class DataReader(object):
                     break
 
                 elif reading_data:
-
                     num_elem += 1
-
                     element_data = [int(match.group()) for match in re.finditer(r'\d+', line.strip())]
-
                     element_nodes = sorted(element_data[1:])
                     try:
                         elements_diagonal = ((element_nodes[0], element_nodes[-1]), (element_nodes[1], element_nodes[-2]))
@@ -120,39 +117,6 @@ class DataReader(object):
 
         # Return the resulting DataFrame
         return df_tables
-
-    # def get_nodes_coord_from_inp(self, filename):
-    #
-    #     with open(filename, 'r') as input_file:
-    #         inside_section, first_node = False, True  # Initialize a flag to indicate if we're inside the relevant section
-    #         section_lines = []  # Create lists to store lines
-    #         for line in input_file:  # Iterate through each line in the input file
-    #             if '*Node' in line and 'Output' not in line:
-    #                 inside_section = True  # Start capturing lines when '*Node' is found
-    #
-    #             elif '*Element,' in line and 'Output' not in line:
-    #                 # Get new geometry, format it, and append it to lines
-    #                 df_nodes_coord = pd.DataFrame(section_lines, columns=['Node Label', 'x', 'y'])
-    #
-    #                 df_nodes_coord['Node Label'] = df_nodes_coord['Node Label'].astype(int)
-    #                 df_nodes_coord['x'] = df_nodes_coord['x'].astype(float)
-    #                 df_nodes_coord['y'] = df_nodes_coord['y'].astype(float)
-    #
-    #                 return df_nodes_coord
-    #
-    #             elif inside_section:
-    #                 section_lines.append(line.strip().split(','))  # If inside the section, add the line to the list
-    #
-    # def compute_coord_nodes_from_displacements(self, df, nodes_coord_undeformed):
-    #
-    #     df_displacements = df[df['Node Label'].isin(nodes_coord_undeformed['Node Label'])]
-    #     nodes_coord_undeformed['x'] = nodes_coord_undeformed['x'] + df_displacements['x']
-    #     nodes_coord_undeformed['y'] = nodes_coord_undeformed['y'] + df_displacements['y']
-    #
-    #     df['COORD.X'] = nodes_coord_undeformed['x']
-    #     df['COORD.Y'] = nodes_coord_undeformed['y']
-    #
-    #     return df, nodes_coord_undeformed
 
 
 
