@@ -1,6 +1,15 @@
 import os
+from src import dataGeneration
 
 
+def store_as_txt(path):
+    file_name = os.path.dirname(dataGeneration.__file__) + '\outputpath.txt'
+    with open(file_name, "w") as file:
+        file.write(path)
+
+
+        
+        
 def clean_artifact_files(directory):
     # Define the allowed file extensions
     allowed_extensions = ['.odb', '.inp', '.txt', '.py', '.cae']

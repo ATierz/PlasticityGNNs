@@ -5,7 +5,7 @@ from matplotlib.cm import ScalarMappable
 from PIL import Image
 
 
-def plot_graph_data(coord_x, coord_y, nodes_data, edge_index, lim_values=(0, 2), lim_coord=(1.25, 6), title=None, save_path=None):
+def plot_graph_data(coord_x, coord_y, nodes_data, edge_index, lim_values=(0, 2), lim_coord_x=(0, 1.), lim_coord_y=(0, 1.), title=None, save_path=None):
     """
     Create a graphical representation of a network graph with colored nodes and edges.
 
@@ -73,11 +73,8 @@ def plot_graph_data(coord_x, coord_y, nodes_data, edge_index, lim_values=(0, 2),
     ax.grid(True)
     ax.set_xlabel('x-coordinate')
     ax.set_ylabel('y-coordinate')
-    ax.set_xlim(0, lim_coord[0])
-    ax.set_ylim(0, lim_coord[1])
-    # Add labeled ticks to the x and y axes
-    # plt.xticks(np.arange(0, lim_coord[0] + 1, 1))
-    # plt.yticks(np.arange(0, lim_coord[1] + 1, 1))
+    ax.set_xlim(lim_coord_x[0], lim_coord_x[1])
+    ax.set_ylim(lim_coord_y[0], lim_coord_y[1])
 
     plt.title(title)
 
@@ -90,7 +87,7 @@ def plot_graph_data(coord_x, coord_y, nodes_data, edge_index, lim_values=(0, 2),
     cbar.set_ticklabels([num for num in np.linspace(lim_values[0], lim_values[1], 5)])  # Specify the corresponding labels
 
     if save_path is not None:
-        plt.savefig(save_path)
+        plt.savefig(save_path, dpi=300)
         plt.close()
 
     plt.show()
@@ -98,9 +95,6 @@ def plot_graph_data(coord_x, coord_y, nodes_data, edge_index, lim_values=(0, 2),
 
 import plotly.graph_objects as go
 
-import plotly.graph_objects as go
-import networkx as nx
-import numpy as np
 
 def plot_graph_data_plotly(coord_x, coord_y, nodes_data, edge_index, lim_values=(0, 2), lim_coord=(1.25, 6), title=None, save_path=None):
     """
@@ -168,7 +162,8 @@ def plot_graph_data_plotly(coord_x, coord_y, nodes_data, edge_index, lim_values=
 def make_gif(data, path, title):
 
     min_value, max_value = np.round(float(data[0].x[:, 3].min()), decimals=3), np.round(float(data[-1].x[:, 3].max())*1.1, decimals=3)
-    max_coord_x, max_coord_y = max(float(data[0].x[:, 4].max()), float(data[-1].x[:, 4].max()))*1.1, float(data[-1].x[:, 5].max())*1.1
+    min_coord_x, max_coord_x = min(float(data[0].x[:, 4].min()), float(data[-1].x[:, 4].min()))*1.1, max(float(data[0].x[:, 4].max()), float(data[-1].x[:, 4].max()))*1.1
+    min_coord_y, max_coord_y = min(float(data[0].x[:, 5].min()), float(data[-1].x[:, 5].min())) * 1.1, max(float(data[0].x[:, 5].max()), float(data[-1].x[:, 5].max())) * 1.1
 
     for i, sample in enumerate(data):
         stress = sample.x[:, 3].tolist()
@@ -177,7 +172,7 @@ def make_gif(data, path, title):
         steps = i
 
         plot_graph_data(coord_x, coord_y, stress, sample.edge_index.tolist(),
-                        lim_values=(min_value, max_value), lim_coord=(max_coord_x, max_coord_y), title=f'{title} iter={i}', save_path=path / f'iter={i}.png')
+                        lim_values=(min_value, max_value), lim_coord_x=(min_coord_x, max_coord_x), lim_coord_y=(min_coord_y, max_coord_y), title=f'{title} iter={i}', save_path=path / f'iter={i}.png')
 
     images = []
     for i in range(steps):

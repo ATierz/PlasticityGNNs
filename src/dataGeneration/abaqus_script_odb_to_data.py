@@ -5,14 +5,12 @@
     you can adapt the script as needed.
 '''
 
-# TODO: For better generalization change the way of naming the output path. Now i can not provide parameter path, so it's
-# TODO: fixed in line 43 to where it should look. Default outputs
 
 from abaqus import *
 from abaqusConstants import *
 from viewerModules import *
 from driverUtils import executeOnCaeStartup
-import argparse
+from src import dataGeneration
 
 
 #################SOME FUNCTIONS#########################
@@ -31,6 +29,14 @@ def find_odb_files(folder):
 ##############################################################
 
 
+file_name = os.path.dirname(dataGeneration.__file__) + '\outputpath.txt'
+with open(file_name, "r") as file:
+    # Read the contents of the file into a variable
+    odb_files_path = file.read()
+
+
+
+
 # Create a viewport and set it as the current one
 session.Viewport(name='Viewport: 1',
              origin=(0.0, 0.0),
@@ -41,7 +47,7 @@ session.viewports['Viewport: 1'].maximize()
 executeOnCaeStartup()
 
 # Call the function to start looping through folders
-odb_files = find_odb_files(r'C:\Users\mikelmartinez\Desktop\data\outputs')
+odb_files = find_odb_files(odb_files_path)
 
 for odb_file in odb_files:
     # Open the identified .odb file
