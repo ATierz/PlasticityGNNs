@@ -56,10 +56,6 @@ for odb_file in odb_files:
     # Extracting Step 1, assuming there is only one step
     step1 = odb_session.steps.values()[0]
 
-    # Define a number format for data
-    nf = NumberFormat(numDigits=4,
-                      precision=0,
-                      format=ENGINEERING)
 
     # Loop over all frames in Step 1
     for count, i in enumerate(odb_session.steps[step1.name].frames):
