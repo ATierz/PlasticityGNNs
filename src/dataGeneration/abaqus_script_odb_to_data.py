@@ -65,8 +65,8 @@ for odb_file in odb_files:
 
         # Configure field report options
         session.fieldReportOptions.setValues(printTotal=OFF,
-                                             printMinMax=OFF,
-                                             numberFormat=nf)
+                                             printMinMax=OFF,)
+                                             #numberFormat=nf)
 
         # Write a field report to a text file
         session.writeFieldReport(
