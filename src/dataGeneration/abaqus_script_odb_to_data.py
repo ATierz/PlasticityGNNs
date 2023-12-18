@@ -84,9 +84,10 @@ for odb_file in odb_files:
             frame=count,
             outputPosition=NODAL,
             variable=(
-                ('U', NODAL),  # Nodal displacements
-                ('S', INTEGRATION_POINT),  # Nodal tension
-                ('COORD', NODAL)
+                ('COORD', NODAL),
+                # ('V', NODAL),  # Nodal displacements
+                # ('ELVD', WHOLE_ELEMENT),
+                ('S', INTEGRATION_POINT)  # Nodal tension
             ))
 
     # Close the .odb file

@@ -11,11 +11,15 @@ class DataReader(object):
     """
     DataReader class for extracting data from a specific format in text files
     """
-    def __init__(self):
+    def __init__(self, sim_type='Glass'):
         # Define regular expression patterns to match lines with desired data for simulation_variable_data.txt
         self.pattern_line = r'\d+\s+[\d.E-]+\s+[\d.E-]+\s+[\d.E-]'
         self.pattern_frame_increment = r'Frame: Increment\s+(\d+)'
         self.pattern_step_time = r'Step Time =\s+([\d.E-]+)'
+        if sim_type == 'Glass':
+            self.pattern_region = r'Field Output reported at nodes for region: ([\w.-]+)'
+        elif sim_type == 'Beam' or sim_type == 'Beam3D':
+            self.pattern_region = r'Field Output reported at nodes for part: ([\w.-]+)'
         # Define regular expression pattern for simulation.inp files
         self.pattern_start_element_info = r'*Element'
         self.pattern_end_element_info = r'*Nset'
@@ -80,12 +84,16 @@ class DataReader(object):
                 # Extract the Step Time from the "Frame" line
                 step_time_match = re.search(self.pattern_step_time, line)
                 frame_increment_match = re.search(self.pattern_frame_increment, line)
+                frame_region_match = re.search(self.pattern_region, line)
                 if step_time_match:
                     current_step_time = float(step_time_match.group(1))
+                if frame_region_match:
+                    current_region = frame_region_match.group(1)
                 if frame_increment_match:
                     current_frame_increment = int(frame_increment_match.group(1))
                 # Check for lines containing column headers
-                if column_headers is None and re.search(r'^\s+Node Label', line):
+                # if column_headers is None and re.search(r'^\s+Node Label', line):
+                if re.search(r'^\s+Node Label', line):
                     # Use the line after column headers to get the actual headers
                     column_headers = re.split(r'\s{2,}', line.strip())
                     continue
@@ -96,9 +104,13 @@ class DataReader(object):
                 elif reading_data:
                     # When we are already reading data and an empty line is encountered,
                     # it indicates the end of the data for the current table
-                    df = pd.DataFrame([data_line.split() for data_line in current_data], columns=column_headers)
+                    try:
+                        df = pd.DataFrame([data_line.split() for data_line in current_data], columns=column_headers)
+                    except:
+                        print()
                     df.insert(0, 'Frame_increment', current_frame_increment)
-                    df.insert(1, 'Step_time', current_step_time)
+                    df.insert(1, 'Region', current_region)
+                    df.insert(2, 'Step_time', current_step_time)
                     data.append(df)  # Store the current table data
                     current_data = []  # Reset current_data
                     reading_data = False
@@ -108,10 +120,11 @@ class DataReader(object):
 
         # Create a pandas DataFrame from the extracted data
         df_tables = pd.concat(data)
+        df_tables = df_tables.fillna(0)
 
         # Cast the data into floats
         for col in df_tables.columns:
-            if col in ['Node Label', 'Frame_increment']:
+            if col in ['Node Label', 'Frame_increment', 'Region']:
                 continue
             df_tables[col] = df_tables[col].astype(float)
 
